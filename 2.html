@@ -1,251 +1,36 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <title>Музыка</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: #f5f5f7;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-    }
-    body.loaded {
-      opacity: 1;
-    }
-    nav {
-      background: #161617cc;
-      color: #fff;
-      padding: 0 40px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .nav-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 44px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .logo-container {
-      margin-right: 30px;
-      width: 32px;
-      height: 32px;
-      position: relative;
-    }
-    .logo {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transition: opacity 0.4s;
-      opacity: 1;
-    }
-    .logo.fade {
-      opacity: 0;
-    }
-    ul.menu {
-      list-style: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-      min-height: 44px;
-    }
-    ul.menu li {
-      padding: 0 16px;
-      position: relative;
-    }
-    ul.menu li a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      opacity: 0;
-      transform: translateY(10px);
-      padding: 8px 12px;
-      border-radius: 18px;
-    }
-    body.loaded ul.menu li a {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    ul.menu li a.active {
-      border: 1px solid #fff;
-    }
-    ul.menu li a:hover {
-      background: #fff;
-      color: #000 !important;
-    }
-    .menu-item-delay-1 { transition-delay: 0.1s !important; }
-    .menu-item-delay-2 { transition-delay: 0.2s !important; }
-
-    .music-container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .player {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      padding: 30px;
-      margin-bottom: 30px;
-    }
-    .player-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .player-cover {
-      width: 150px;
-      height: 150px;
-      border-radius: 8px;
-      object-fit: cover;
-      margin-right: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .player-info {
-      flex: 1;
-    }
-    .player-title {
-      font-size: 24px;
-      margin: 0 0 5px;
-    }
-    .player-artist {
-      font-size: 18px;
-      color: #666;
-      margin: 0 0 15px;
-    }
-    .player-controls {
-      display: flex;
-      align-items: center;
-    }
-    .player-btn {
-      background: #000;
-      color: #fff;
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .player-btn:hover {
-      transform: scale(1.05);
-    }
-    .player-btn i {
-      font-size: 20px;
-    }
-    .progress-container {
-      flex: 1;
-      margin: 0 20px;
-    }
-    .progress-bar {
-      height: 4px;
-      background: #eee;
-      border-radius: 2px;
-      margin-bottom: 5px;
-      overflow: hidden;
-    }
-    .progress {
-      height: 100%;
-      background: #000;
-      width: 30%;
-    }
-    .time-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: #999;
-    }
-    .yandex-frame {
-      width: 100%;
-      height: 80px;
-      border: none;
-      border-radius: 0 0 12px 12px;
-      margin-top: 10px;
-    }
-  </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-<nav>
-  <div class="nav-content">
-    <div class="logo-container" id="logoContainer">
-      <img class="logo" id="logo" src="" alt="Apple Emoji">
-    </div>
-    <ul class="menu" id="mainMenu"></ul>
-  </div>
-</nav>
-
-<div class="music-container">
-  <div class="player">
-    <div class="player-header">
-      <img src="https://via.placeholder.com/150" alt="Обложка" class="player-cover" id="cover">
-      <div class="player-info">
-        <h2 class="player-title" id="song-title">Яндекс.Музыка</h2>
-        <p class="player-artist" id="song-artist">Выберите трек</p>
-        <div class="player-controls">
-          <button class="player-btn" id="prev-btn"><i class="fas fa-backward"></i></button>
-          <button class="player-btn" id="play-btn"><i class="fas fa-pause"></i></button>
-          <button class="player-btn" id="next-btn"><i class="fas fa-forward"></i></button>
-        </div>
-      </div>
-    </div>
-    <iframe class="yandex-frame" id="yandex-frame" src="about:blank"></iframe>
-  </div>
-</div>
-
 <script>
 // Логотипы
-const appleEmojiImages = [
+const logos = [
   'https://emojigraph.org/media/apple/grinning-face_1f600.png',
-  'https://emojigraph.org/media/apple/grinning-face-with-big-eyes_1f603.png',
-  'https://emojigraph.org/media/apple/grinning-face-with-smiling-eyes_1f604.png',
-  'https://emojigraph.org/media/apple/beaming-face-with-smiling-eyes_1f601.png',
-  'https://emojigraph.org/media/apple/rolling-on-the-floor-laughing_1f923.png',
   'https://emojigraph.org/media/apple/face-with-tears-of-joy_1f602.png',
   'https://emojigraph.org/media/apple/smiling-face-with-heart-eyes_1f60d.png'
 ];
-
 const logoEl = document.getElementById('logo');
-function getRandomEmojiImage() {
-  return appleEmojiImages[Math.floor(Math.random() * appleEmojiImages.length)];
-}
-function changeLogo() {
+function randomLogo() {
   logoEl.classList.add('fade');
   setTimeout(() => {
-    logoEl.src = getRandomEmojiImage();
+    logoEl.src = logos[Math.floor(Math.random() * logos.length)];
     logoEl.classList.remove('fade');
   }, 400);
 }
-logoEl.src = getRandomEmojiImage();
-setInterval(changeLogo, 3000);
+randomLogo();
+setInterval(randomLogo, 3000);
 
 // Меню
+const menu = document.getElementById('mainMenu');
 const pageConfig = {
-  "menuItems": [
-    { "title": "Главная", "link": "index.html", "delay": "delay-0" },
-    { "title": "Музыка", "link": "#", "delay": "delay-1" },
-    { "title": "Любимое", "link": "favorites.html", "delay": "delay-2" }
+  menuItems: [
+    { title: 'Главная', link: 'index.html' },
+    { title: 'Музыка', link: '#' },
+    { title: 'Любимое', link: 'favorites.html' }
   ]
 };
-const menu = document.getElementById('mainMenu');
-pageConfig.menuItems.forEach((item, index) => {
+pageConfig.menuItems.forEach((item) => {
   const li = document.createElement('li');
   const a = document.createElement('a');
   a.textContent = item.title;
   a.href = item.link;
-  a.classList.add('menu-item-delay-' + index);
-  if (item.title === "Музыка") a.classList.add('active');
+  if (item.title === 'Музыка') a.classList.add('active');
   li.appendChild(a);
   menu.appendChild(li);
 });
@@ -253,71 +38,50 @@ window.addEventListener('load', () => {
   document.body.classList.add('loaded');
 });
 
-// Плеер
-const tracks = [
-  {
-    id: "112912322",
-    albumId: "25474374",
-    title: "Трек 1",
-    artist: "Исполнитель 1",
-    cover: "https://via.placeholder.com/150"
-  },
-  {
-    id: "112912323",
-    albumId: "25474375",
-    title: "Трек 2",
-    artist: "Исполнитель 2",
-    cover: "https://via.placeholder.com/150/0000FF/FFFFFF"
-  },
-  {
-    id: "112912324",
-    albumId: "25474376",
-    title: "Трек 3",
-    artist: "Исполнитель 3",
-    cover: "https://via.placeholder.com/150/FF0000/FFFFFF"
-  }
-];
+// Переключение платформ и остановка других плееров
+const buttons = document.querySelectorAll('.platform-btn');
+const yandexPlayer = document.getElementById('yandex-player');
+const spotifyPlayer = document.getElementById('spotify-player');
 
-const yandexFrame = document.getElementById('yandex-frame');
-const playBtn = document.getElementById('play-btn');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
+// iframe'ы
+const spotifyIframe = spotifyPlayer.querySelector('iframe');
+const yandexIframe = yandexPlayer.querySelector('iframe');
 
-let currentTrackIndex = 0;
-let isPlaying = true;
+// Сохраняем оригинальные src
+const yandexOriginalSrc = yandexIframe.src;
 
-function loadTrack(index) {
-  const track = tracks[index];
-  document.getElementById('song-title').textContent = track.title;
-  document.getElementById('song-artist').textContent = track.artist;
-  document.getElementById('cover').src = track.cover;
-  yandexFrame.src = `https://music.yandex.ru/iframe/#track/${track.id}/${track.albumId}`;
-  isPlaying = true;
-  playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-}
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-function togglePlay() {
-  isPlaying = !isPlaying;
-  playBtn.innerHTML = isPlaying
-    ? '<i class="fas fa-pause"></i>'
-    : '<i class="fas fa-play"></i>';
-}
+    const platform = btn.getAttribute('data-platform');
 
-function nextTrack() {
-  currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-  loadTrack(currentTrackIndex);
-}
+    if (platform === 'yandex') {
+      // Остановим Spotify
+      spotifyIframe.contentWindow.postMessage({
+        event: 'command',
+        func: 'pause'
+      }, '*');
 
-function prevTrack() {
-  currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
-  loadTrack(currentTrackIndex);
-}
+      // Перезагрузим Yandex iframe (если был выключен)
+      yandexIframe.src = yandexOriginalSrc;
 
-playBtn.addEventListener('click', togglePlay);
-prevBtn.addEventListener('click', prevTrack);
-nextBtn.addEventListener('click', nextTrack);
+      yandexPlayer.classList.add('active');
+      spotifyPlayer.classList.remove('active');
+    } else if (platform === 'spotify') {
+      // Перезагрузим Yandex, чтобы остановить воспроизведение
+      yandexIframe.src = 'about:blank';
 
-loadTrack(currentTrackIndex);
+      // Включим Spotify
+      spotifyIframe.contentWindow.postMessage({
+        event: 'command',
+        func: 'play'
+      }, '*');
+
+      spotifyPlayer.classList.add('active');
+      yandexPlayer.classList.remove('active');
+    }
+  });
+});
 </script>
-</body>
-</html>
