@@ -797,20 +797,10 @@ setInterval(() => {
   </div>
 </div>
 <script>
-const apiKey = 'e5afa1cb59683e312290d2e136d79e38'; // твой ключ
+const apiKey = 'e5afa1cb59683e312290d2e136d79e38'; // твой openweather ключ
 const weatherInfo = document.getElementById('weatherInfo');
 
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(fetchWeather, showError, { timeout: 10000 });
-} else {
-  weatherInfo.innerHTML = '<p class="error">геолокация не поддерживается</p>';
-}
-
-function fetchWeather(position) {
-  const lat = position.coords.latitude;
-  const lon = position.coords.longitude;
-  console.log('Координаты:', lat, lon);
-
+function fetchWeatherByCoords(lat, lon) {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ru`;
 
   fetch(url)
@@ -836,16 +826,39 @@ function fetchWeather(position) {
     });
 }
 
-function showError(error) {
-  let msg = '';
-  switch(error.code) {
-    case error.PERMISSION_DENIED: msg = 'отказано в доступе к геолокации'; break;
-    case error.POSITION_UNAVAILABLE: msg = 'местоположение недоступно'; break;
-    case error.TIMEOUT: msg = 'превышено время ожидания геолокации'; break;
-    default: msg = 'неизвестная ошибка геолокации';
-  }
-  weatherInfo.innerHTML = `<p class="error">ошибка получения геолокации: ${msg}</p>`;
+function fetchCoordsByIP() {
+  fetch('https://ipinfo.io/json?token=003f31b4344d09')  // замените YOUR_TOKEN на ваш токен с ipinfo.io, можно зарегистрироваться бесплатно
+    .then(res => {
+      if (!res.ok) throw new Error(`Ошибка IP-сервиса: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      if (!data || !data.loc) throw new Error('Ошибка получения координат по IP');
+      const [lat, lon] = data.loc.split(',');
+      fetchWeatherByCoords(lat, lon);
+    })
+    .catch(err => {
+      console.error(err);
+      weatherInfo.innerHTML = '<p class="error">Не удалось определить местоположение по IP</p>';
+    });
 }
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+    },
+    err => {
+      console.warn('Геолокация не сработала, пытаюсь по IP', err);
+      fetchCoordsByIP();
+    },
+    { timeout: 10000 }
+  );
+} else {
+  fetchCoordsByIP();
+}
+
+
 
 </script>
 <style>
