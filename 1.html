@@ -86,67 +86,6 @@
     .menu-item-delay-1 { transition-delay: 0.2s; }
     .menu-item-delay-2 { transition-delay: 0.3s; }
 
-    .popup-button {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fff;
-      color: #000;
-      padding: 12px 24px;
-      border-radius: 20px;
-      cursor: pointer;
-      z-index: 1001;
-      font-size: 18px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      border: 1px solid transparent;
-      transition: border-color 0.3s ease;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    }
-    .popup-button:hover {
-      border-color: #000;
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      backdrop-filter: blur(8px);
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-    }
-
-    .modal-box {
-      background: #fff;
-      border-radius: 16px;
-      padding: 30px;
-      width: 90%;
-      max-width: 500px;
-      margin: 100px auto;
-      position: relative;
-      animation: fadeIn 0.5s ease;
-      text-align: center;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #888;
-      cursor: pointer;
-      transition: color 0.3s ease;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .modal-close:hover {
-      color: red;
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
@@ -162,21 +101,6 @@
 	.dark-mode {
 	  background: #111;
 	  color: #eee;
-	}
-
-	.dark-mode .modal-box {
-	  background: #222;
-	  color: #fff;
-	}
-
-	.dark-mode .popup-button {
-	  background: #333;
-	  color: #fff;
-	  border-color: #fff;
-	}
-
-	.dark-mode .popup-button:hover {
-	  border-color: #888;
 	}
 
 	.dark-mode .theme-toggle {
@@ -258,6 +182,7 @@
 </nav>
 
 
+
 <div class="centered-texts">
   <div id="bigText" class="big-text"></div>
   <div id="content" class="small-texts"></div>
@@ -316,21 +241,6 @@
   window.addEventListener('load', () => {
     document.body.classList.add('loaded');
   });
-
-  const showBtn = document.getElementById('showModalBtn');
-  const overlay = document.getElementById('modalOverlay');
-  const closeBtn = document.getElementById('closeModal');
-
-  setTimeout(() => {
-    showBtn.style.display = 'block';
-  }, 3000);
-
-  showBtn.onclick = () => {
-    overlay.style.display = 'block';
-  };
-  closeBtn.onclick = () => {
-    overlay.style.display = 'none';
-  };
 
   const texts = [
     "музыка помогает мне расслабиться и вдохновиться на новые идеи.",
@@ -421,7 +331,7 @@
     const scrollTargets = [
       document.querySelector('h2.section-title:nth-of-type(1)'), // 🎬 мои видео
       document.querySelector('h2.section-title:nth-of-type(2)'), // 🎧 мой плеер
-	  document.querySelector('h2.section-title:nth-of-type(3)'), //  погода
+	  document.querySelector('h2.section-title:nth-of-type(3)'), // 🎧 погода
     ];
 
     let currentIndex = -1;
@@ -887,7 +797,7 @@ setInterval(() => {
   </div>
 </div>
 <script>
-const apiKey = 'e5afa1cb59683e312290d2e136d79e38'; // замени на свой ключ
+const apiKey = 'e5afa1cb59683e312290d2e136d79e38'; // твой ключ
 const weatherInfo = document.getElementById('weatherInfo');
 
 if (navigator.geolocation) {
@@ -899,6 +809,8 @@ if (navigator.geolocation) {
 function fetchWeather(position) {
   const lat = position.coords.latitude;
   const lon = position.coords.longitude;
+  console.log('Координаты:', lat, lon);
+
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ru`;
 
   fetch(url)
@@ -956,7 +868,22 @@ function showError(error) {
 }
 
 </style>
-<footer style="background:#eee; color:#666; font-size:12px; text-align:center; padding:15px 10px; font-family:sans-serif;">
+<style>
+footer {
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.dark-mode footer {
+  background-color: #1a1a1a;
+  color: #999;
+}
+</style>
+<footer>
   <div id="siteInfo">
     <div><b>Название сайта:</b> guide</div>
     <div><b>Ваш IP:</b> <span id="userIp">загрузка...</span></div>
@@ -994,6 +921,40 @@ function showError(error) {
       document.getElementById('userIp').textContent = 'не удалось определить';
     });
 </script>
+<script>
+  const showBtn = document.getElementById('showModalBtn');
+  const overlay = document.getElementById('modalOverlay');
+  const closeBtn = document.getElementById('closeModal');
+
+  let lastScroll = 0;
+  let scrollListenerAttached = false;
+
+  setTimeout(() => {
+    showBtn.style.display = 'block';
+
+    // только после появления — начинаем следить за скроллом
+    if (!scrollListenerAttached) {
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.scrollY;
+
+        if (currentScroll > lastScroll + 10) {
+          showBtn.classList.add('hidden'); // вниз — скрыть
+        } else if (currentScroll < lastScroll - 10 || currentScroll <= 0) {
+          showBtn.classList.remove('hidden'); // вверх — показать
+        }
+
+        lastScroll = currentScroll;
+      });
+      scrollListenerAttached = true;
+    }
+  }, 3000);
+
+  showBtn.onclick = () => overlay.style.display = 'block';
+  closeBtn.onclick = () => overlay.style.display = 'none';
+</script>
+
+
+
 
 </body>
 </html>
