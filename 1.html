@@ -258,17 +258,6 @@
 </nav>
 
 
-<!-- кнопка -->
-<div class="popup-button" id="showModalBtn">нажми</div>
-
-<!-- модалка -->
-<div class="overlay" id="modalOverlay">
-  <div class="modal-box">
-    <div class="modal-close" id="closeModal">✕</div>
-    <p>#текст придумал дмитрий уткин</p>
-  </div>
-</div>
-
 <div class="centered-texts">
   <div id="bigText" class="big-text"></div>
   <div id="content" class="small-texts"></div>
@@ -432,6 +421,7 @@
     const scrollTargets = [
       document.querySelector('h2.section-title:nth-of-type(1)'), // 🎬 мои видео
       document.querySelector('h2.section-title:nth-of-type(2)'), // 🎧 мой плеер
+	  document.querySelector('h2.section-title:nth-of-type(3)'), //  погода
     ];
 
     let currentIndex = -1;
@@ -892,17 +882,16 @@ setInterval(() => {
 </script>
 <h2 class="section-title">погода</h2>
 <div class="weather-container">
-  <h2>погода у тебя</h2>
   <div id="weatherInfo" class="weather-info">
     <p class="loading">загрузка...</p>
   </div>
 </div>
 <script>
-const apiKey = 'Ye5afa1cb59683e312290d2e136d79e38'; // вставь свой api-ключ openweathermap
+const apiKey = 'e5afa1cb59683e312290d2e136d79e38'; // замени на свой ключ
 const weatherInfo = document.getElementById('weatherInfo');
 
 if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(fetchWeather, showError);
+  navigator.geolocation.getCurrentPosition(fetchWeather, showError, { timeout: 10000 });
 } else {
   weatherInfo.innerHTML = '<p class="error">геолокация не поддерживается</p>';
 }
@@ -913,8 +902,12 @@ function fetchWeather(position) {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ru`;
 
   fetch(url)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`Ошибка API: ${res.status}`);
+      return res.json();
+    })
     .then(data => {
+      if (!data || !data.main || !data.weather) throw new Error('Неверный формат данных');
       const temp = data.main.temp;
       const desc = data.weather[0].description;
       const city = data.name;
@@ -925,14 +918,23 @@ function fetchWeather(position) {
         <p><b>небо:</b> ${desc}</p>
       `;
     })
-    .catch(() => {
-      weatherInfo.innerHTML = '<p class="error">не получилось получить погоду</p>';
+    .catch(error => {
+      console.error(error);
+      weatherInfo.innerHTML = `<p class="error">не получилось получить погоду: ${error.message}</p>`;
     });
 }
 
 function showError(error) {
-  weatherInfo.innerHTML = '<p class="error">ошибка получения геолокации</p>';
+  let msg = '';
+  switch(error.code) {
+    case error.PERMISSION_DENIED: msg = 'отказано в доступе к геолокации'; break;
+    case error.POSITION_UNAVAILABLE: msg = 'местоположение недоступно'; break;
+    case error.TIMEOUT: msg = 'превышено время ожидания геолокации'; break;
+    default: msg = 'неизвестная ошибка геолокации';
+  }
+  weatherInfo.innerHTML = `<p class="error">ошибка получения геолокации: ${msg}</p>`;
 }
+
 </script>
 <style>
 .weather-container {
@@ -954,6 +956,44 @@ function showError(error) {
 }
 
 </style>
+<footer style="background:#eee; color:#666; font-size:12px; text-align:center; padding:15px 10px; font-family:sans-serif;">
+  <div id="siteInfo">
+    <div><b>Название сайта:</b> guide</div>
+    <div><b>Ваш IP:</b> <span id="userIp">загрузка...</span></div>
+    <div><b>Время:</b> <span id="currentTime">--:--:--</span></div>
+    <div style="margin-top:8px; font-style: italic;" id="funWords">инголятор</div>
+  </div>
+</footer>
+
+<script>
+  // Слова для смены
+  const words = ["инголятор", "табуретка", "жужжалка", "пылесосина", "шуршалка", "козявчик"];
+  const funWordsEl = document.getElementById('funWords');
+  let wordIndex = 0;
+  setInterval(() => {
+    wordIndex = (wordIndex + 1) % words.length;
+    funWordsEl.textContent = words[wordIndex];
+  }, 3000);
+
+  // Время
+  function updateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ru-RU');
+    document.getElementById('currentTime').textContent = timeStr;
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  // Получение IP через API
+  fetch('https://api.ipify.org?format=json')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('userIp').textContent = data.ip;
+    })
+    .catch(() => {
+      document.getElementById('userIp').textContent = 'не удалось определить';
+    });
+</script>
 
 </body>
 </html>
